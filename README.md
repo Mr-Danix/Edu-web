@@ -5,7 +5,8 @@ It allows users to manage tasks, track progress, and stay productive with a simp
 
 ## 🌍 Live Demo
 
-https://mr-danix.github.io/AI-Study-Planner/
+https://mr-danix.github.io/Edu-web/
+
 
 ## 🚀 Features
 
