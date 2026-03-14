@@ -1,4 +1,4 @@
-# Edu web   
+# Edu web  
 
 A website designed to help students organize their homework, exams, and study schedule in one place.  
 It allows users to manage tasks, track progress, and stay productive with a simple and clean interface.
