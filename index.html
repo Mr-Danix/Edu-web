@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edu Web | Intelligent Study Planner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-soft: #eef2ff;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --high: #ef4444;
+            --medium: #f59e0b;
+            --low: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; }
+
+        /* Sidebar Navigation */
+        aside { width: 280px; background: var(--card); border-right: 1px solid var(--border); padding: 2rem; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 2.5rem; display: flex; align-items: center; gap: 10px; }
+        nav { flex: 1; }
+        nav button { width: 100%; padding: 0.8rem 1rem; margin-bottom: 0.5rem; border: none; border-radius: 10px; background: transparent; color: var(--text-muted); text-align: left; cursor: pointer; font-weight: 500; transition: 0.2s; }
+        nav button.active { background: var(--primary-soft); color: var(--primary); }
+        nav button:hover:not(.active) { background: #f1f5f9; }
+
+        /* Main Content */
+        main { flex: 1; padding: 2.5rem; max-width: 1100px; margin: 0 auto; }
+        header { margin-bottom: 2rem; }
+        header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        header p { color: var(--text-muted); }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .stat-box { background: var(--card); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .stat-box h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .stat-box .val { font-size: 1.8rem; font-weight: 700; }
+
+        /* Form Area */
+        .input-card { background: var(--card); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 2rem; }
+        .input-group { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; }
+        input, select { padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; outline-color: var(--primary); }
+        .btn-add { background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-add:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Task List */
+        .section-title { margin-bottom: 1rem; font-size: 1.1rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+        .task-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .task-item { background: var(--card); padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; transition: 0.2s; }
+        .task-item:hover { border-color: var(--primary); }
+        .task-info { display: flex; align-items: center; gap: 1rem; }
+        .priority-indicator { width: 12px; height: 12px; border-radius: 4px; }
+        .task-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+        .actions { display: flex; gap: 0.5rem; }
+        .btn-icon { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        
+        /* Tab Logic */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+
+        /* Calendar Placeholder */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; background: var(--border); border: 1px solid var(--border); }
+        .calendar-day { background: white; height: 100px; padding: 10px; font-size: 0.8rem; }
+
+        @media (max-width: 900px) {
+            aside { display: none; }
+            .input-group { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="logo">✨ Edu Web</div>
+        <nav>
+            <button class="active" onclick="showSection('dashboard', this)">Dashboard</button>
+            <button onclick="showSection('calendar', this)">Calendar View</button>
+            <button onclick="showSection('schedule', this)">Schedule</button>
+        </nav>
+        <div style="margin-top: auto; font-size: 0.75rem; color: var(--text-muted);">v2.0 Beta • 2026</div>
+    </aside>
+
+    <main>
+        <header>
+            <h1 id="greeting">Good Morning, Student</h1>
+            <p id="date-string"></p>
+        </header>
+
+        <section id="dashboard" class="page-section active">
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <h3>Focus Score</h3>
+                    <div class="val" id="progress-val">0%</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Tasks Pending</h3>
+                    <div class="val" id="pending-count">0</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Due Today</h3>
+                    <div class="val" id="today-count">0</div>
+                </div>
+            </div>
+
+            <div class="input-card">
+                <div class="input-group">
+                    <input type="text" id="t-name" placeholder="Homework/Exam Name">
+                    <input type="date" id="t-date">
+                    <select id="t-priority">
+                        <option value="high">Urgent</option>
+                        <option value="medium" selected>Standard</option>
+                        <option value="low">Backlog</option>
+                    </select>
+                    <button class="btn-add" onclick="addTask()">Add Task</button>
+                </div>
+            </div>
+
+            <div class="section-title">🕒 Prioritized Queue</div>
+            <div id="task-list" class="task-list">
+                </div>
+        </section>
+
+        <section id="calendar" class="page-section">
+            <div class="section-title">📅 Monthly Overview</div>
+            <div class="calendar-grid" id="calendar-grid">
+                </div>
+        </section>
+
+        <section id="schedule" class="page-section">
+            <div class="section-title">Recommended Flow</div>
+            <div id="ai-schedule-list" class="task-list">
+                </div>
+        </section>
+    </main>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('eduai_tasks')) || [];
+
+        // App Initialization
+        window.onload = () => {
+            renderAll();
+            document.getElementById('date-string').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            generateCalendar();
+        };
+
+        function showSection(id, btn) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function addTask() {
+            const name = document.getElementById('t-name');
+            const date = document.getElementById('t-date');
+            const priority = document.getElementById('t-priority');
+
+            if(!name.value || !date.value) return alert("Details missing!");
+
+            const task = {
+                id: Date.now(),
+                name: name.value,
+                date: date.value,
+                priority: priority.value,
+                completed: false
+            };
+
+            tasks.push(task);
+            name.value = '';
+            save();
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(t => t.id === id ? {...t, completed: !t.completed} : t);
+            save();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            save();
+        }
+
+        function save() {
+            localStorage.setItem('eduai_tasks', JSON.stringify(tasks));
+            renderAll();
+        }
+
+        function renderAll() {
+            const list = document.getElementById('task-list');
+            const aiList = document.getElementById('ai-schedule-list');
+            
+            // AI Logic: Sort by Priority (High > Med > Low) then by Date
+            const sorted = [...tasks].sort((a, b) => {
+                const weights = { high: 1, medium: 2, low: 3 };
+                return weights[a.priority] - weights[b.priority] || new Date(a.date) - new Date(b.date);
+            });
+
+            const html = sorted.map(t => `
+                <div class="task-item" style="${t.completed ? 'opacity: 0.5' : ''}">
+                    <div class="task-info">
+                        <div class="priority-indicator" style="background: var(--${t.priority})"></div>
+                        <div>
+                            <div style="${t.completed ? 'text-decoration: line-through' : 'font-weight: 600'}">${t.name}</div>
+                            <div class="task-meta">${new Date(t.date).toDateString()} • ${t.priority.toUpperCase()}</div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-icon" onclick="toggleTask(${t.id})">✅</button>
+                        <button class="btn-icon" onclick="deleteTask(${t.id})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+
+            list.innerHTML = html || '<p style="color:var(--text-muted)">No tasks found. Add your first assignment above!</p>';
+            aiList.innerHTML = html; // In a real AI app, we'd add time-blocks here.
+            
+            updateStats();
+        }
+
+        function updateStats() {
+            const completed = tasks.filter(t => t.completed).length;
+            const total = tasks.length;
+            const today = new Date().toISOString().split('T')[0];
+            const dueToday = tasks.filter(t => t.date === today && !t.completed).length;
+
+            document.getElementById('progress-val').innerText = total ? Math.round((completed/total)*100) + '%' : '0%';
+            document.getElementById('pending-count').innerText = total - completed;
+            document.getElementById('today-count').innerText = dueToday;
+        }
+
+        function generateCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            for(let i=1; i<=31; i++) {
+                grid.innerHTML += `<div class="calendar-day">${i}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
