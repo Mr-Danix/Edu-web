@@ -3,7 +3,7 @@
 A website designed to help students organize their homework, exams, and study schedule in one place.  
 It allows users to manage tasks, track progress, and stay productive with a simple and clean interface.
 
-## 🌍 Live Demo      
+## 🌍 Live Demo     
 
 https://mr-danix.github.io/Edu-web/
 
